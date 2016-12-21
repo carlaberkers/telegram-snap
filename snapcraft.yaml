@@ -191,6 +191,8 @@ parts:
     source-depth: 1
     plugin: cmake
     build-packages:
+      - libasound2-dev
+      - libpulse-dev
       - portaudio19-dev
     configflags:
       - -DCMAKE_BUILD_TYPE=Release
