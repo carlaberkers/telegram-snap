@@ -9,7 +9,7 @@ env:
   - TERM=dumb
   - MAKEFLAGS='--silent -j3'
   matrix:
-  - PART="qt"
+  - PART="ffmpeg"
   - PART="gyp"
 
 before_cache:
