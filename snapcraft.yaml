@@ -194,6 +194,7 @@ parts:
       - libasound2-dev
       - libpulse-dev
       - portaudio19-dev
+      - oss4-dev
     configflags:
       - -DCMAKE_BUILD_TYPE=Release
       - -DLIBTYPE=STATIC
