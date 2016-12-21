@@ -23,9 +23,8 @@ cache:
   - parts/qt
 
 install:
-  - docker run --name builder -e TERM -e MAKEFLAGS -v $PWD:$PWD -w $PWD -td snapcore/snapcraft
-  - docker exec -i builder apt update -qq
-  - docker exec -i builder apt install snapcraft eatmydata -yq
+  - docker volume create --driver local --opt type=tmpfs --opt device=tmpfs --opt o=size=5g --name t
+  - docker run --name builder -e TERM -e MAKEFLAGS -v $PWD:$PWD -v t:/t -w $PWD -td snapcore/snapcraft
 
 before_script:
 - test $TRAVIS_BRANCH != master || test $TRAVIS_PULL_REQUEST != false &&
@@ -33,22 +32,22 @@ before_script:
   echo 'Debug' || echo 'Default'
 
 script:
-  - docker exec -i builder sh -c "cp -ra . /dev/shm/build; cd /dev/shm/build; eatmydata snapcraft"
+  - docker exec -i builder sh -c "cp -ra . /t; cd /; snapcraft"
 
-after_success:
-- openssl aes-256-cbc -K $encrypted_1d36a60557dc_key -iv $encrypted_1d36a60557dc_iv
-  -in .snapcraft/travis_snapcraft.cfg -out .snapcraft/snapcraft.cfg -d
-- git checkout -- snapcraft.yaml
-
-before_deploy:
-  - docker exec -i builder snapcraft clean telegram
-  - travis_wait 60 docker exec -i builder snapcraft
-
-deploy:
-  skip_cleanup: true
-  provider: script
-  script: docker exec -i builder snapcraft push *.snap --release edge
-  on:
-    branch: master
-    # condition: $TRAVIS_PULL_REQUEST = false
-    # tags: true
+#after_success:
+#- openssl aes-256-cbc -K $encrypted_1d36a60557dc_key -iv $encrypted_1d36a60557dc_iv
+#  -in .snapcraft/travis_snapcraft.cfg -out .snapcraft/snapcraft.cfg -d
+#- git checkout -- snapcraft.yaml
+#
+#before_deploy:
+#  - docker exec -i builder snapcraft clean telegram
+#  - travis_wait 60 docker exec -i builder snapcraft
+#
+#deploy:
+#  skip_cleanup: true
+#  provider: script
+#  script: docker exec -i builder snapcraft push *.snap --release edge
+#  on:
+#    branch: master
+#    # condition: $TRAVIS_PULL_REQUEST = false
+#    # tags: true
