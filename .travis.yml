@@ -9,21 +9,21 @@ env:
   - TERM=dumb
   - MAKEFLAGS='--silent -j3'
 
-before_cache:
-  # - find parts/qt
-  - rm -fv parts/*/src
-  - rm -fv parts/*/state/stage
-  - rm -fv parts/*/state/prime
-
-cache:
-  directories:
-  - parts/ffmpeg
-  - parts/gyp
-  - parts/libxkbcommon
-  - parts/qt
+#before_cache:
+#  # - find parts/qt
+#  - rm -fv parts/*/src
+#  - rm -fv parts/*/state/stage
+#  - rm -fv parts/*/state/prime
+#
+#cache:
+#  directories:
+#  - parts/ffmpeg
+#  - parts/gyp
+#  - parts/libxkbcommon
+#  - parts/qt
 
 install:
-  - docker volume create --driver local --opt type=tmpfs --opt device=tmpfs --opt o=size=5g --name build
+  - docker volume create --driver local --opt type=tmpfs --opt device=tmpfs --opt o=size=15g --name build
   - docker run --name builder -e TERM -e MAKEFLAGS -v $PWD:$PWD -v build:/build -w $PWD -td snapcore/snapcraft
 
 before_script:
