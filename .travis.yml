@@ -23,7 +23,7 @@ cache:
   - parts/qt
 
 install:
-  - docker run --name builder -e TERM -e MAKEFLAGS -v $PWD:$PWD -w $PWD -td ubuntu:xenial
+  - docker run --name builder -e TERM -e MAKEFLAGS -v $PWD:$PWD -w $PWD -td snapcore/snapcraft
   - docker exec -i builder apt update -qq
   - docker exec -i builder apt install snapcraft eatmydata -yq
 
