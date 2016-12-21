@@ -8,23 +8,20 @@ env:
   global:
   - TERM=dumb
   - MAKEFLAGS='--silent -j3'
+  matrix:
+  - PART="qt"
+  - PART="gyp"
 
-#before_cache:
-#  # - find parts/qt
-#  - rm -fv parts/*/src
-#  - rm -fv parts/*/state/stage
-#  - rm -fv parts/*/state/prime
-#
-#cache:
-#  directories:
-#  - parts/ffmpeg
-#  - parts/gyp
-#  - parts/libxkbcommon
-#  - parts/qt
+before_cache:
+   - echo "Caching:"
+   - find parts
+
+cache:
+  directories:
+   - parts
 
 install:
-  - docker volume create --driver local --opt type=tmpfs --opt device=tmpfs --opt o=size=15g --name build
-  - docker run --name builder -e TERM -e MAKEFLAGS -v $PWD:$PWD -v build:/build -w $PWD -td snapcore/snapcraft
+  - docker run --name builder -e TERM -e MAKEFLAGS -v $PWD:$PWD -w $PWD -td snapcore/snapcraft
 
 before_script:
 - test $TRAVIS_BRANCH != master || test $TRAVIS_PULL_REQUEST != false &&
@@ -32,22 +29,7 @@ before_script:
   echo 'Debug' || echo 'Default'
 
 script:
-  - docker exec -i builder sh -c "cp -ra . /build; cd /build; snapcraft"
+  - docker exec -i builder snapcraft $PART
 
-#after_success:
-#- openssl aes-256-cbc -K $encrypted_1d36a60557dc_key -iv $encrypted_1d36a60557dc_iv
-#  -in .snapcraft/travis_snapcraft.cfg -out .snapcraft/snapcraft.cfg -d
-#- git checkout -- snapcraft.yaml
-#
-#before_deploy:
-#  - docker exec -i builder snapcraft clean telegram
-#  - travis_wait 60 docker exec -i builder snapcraft
-#
-#deploy:
-#  skip_cleanup: true
-#  provider: script
-#  script: docker exec -i builder snapcraft push *.snap --release edge
-#  on:
-#    branch: master
-#    # condition: $TRAVIS_PULL_REQUEST = false
-#    # tags: true
+after_success:
+  - docker exec -i builder snapcraft
